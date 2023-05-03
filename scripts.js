@@ -1,3 +1,5 @@
+//  start off by declaring all const to be used throughout the script in the global scope
+// 
 matches = books
 page = 1;
 
@@ -17,12 +19,14 @@ night = {
 fragment = document.createDocumentFragment()
 const extracted = books.slice(0, 36)
 
-for ({ author, image, title, id }; extracted; i++) {
+// for the for loop set the end of loop to 36 so it stops showing books when it reachs "extracted = 36"
+// 
+for (const i = { author, image, title, id }; i <= extracted; i++) {
     const preview = createPreview({
         author,
         id,
         image,
-        title
+        title,
     })
 
     fragment.appendChild(preview)
