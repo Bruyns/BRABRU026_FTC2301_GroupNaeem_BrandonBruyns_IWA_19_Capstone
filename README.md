@@ -1,6 +1,9 @@
 # BRABRU026_FTC2301_GroupNaeem_BrandonBruyns_IWACapstone
 IWA19 captone project for codespace introductionary course.
 
+## links attached
+* google slideshow -[https://docs.google.com/presentation/d/1KcjSDyA6o5mhZbHWdmvEYiZAD5l9YZ_S2lNN1q4CQZQ/edit?usp=sharing]
+
 ## User Stories
 * As a user, I want to view a list of book previews, by title and author, so that I can discover new books to read.
 * As a user, I want an image associated with all book previews so that I can recognize a book by the cover even if I forgot the name.
@@ -33,3 +36,5 @@ IWA19 captone project for codespace introductionary course.
 ## initial thoughts on what changes to make to IWA19 captone
 * use defer instead of having both .js files load before the entire webpage for faster loading using "export", "import" feature?
 * make i = [author, image, title, id]
+
+
