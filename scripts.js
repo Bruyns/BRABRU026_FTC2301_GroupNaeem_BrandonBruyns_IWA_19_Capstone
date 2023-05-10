@@ -5,17 +5,17 @@ import{
 }from "./data.js"
 
 // --ALL GLOBALLY ASSIGNED CONSTANTS--
-const matches = books.filter(book => book.title.toLowerCase().includes(searchTitle.toLowerCase()) || book.author.toLowerCase().includes(dataSearchAuthor.toLowerCase()) || book.genres.toLowerCase().includes(dataSearchGenre.toLowerCase()) )
+// const matches = books.filter(book => book.title.toLowerCase().includes(searchTitle.toLowerCase()) || book.author.toLowerCase().includes(dataSearchAuthor.toLowerCase()) || book.genres.toLowerCase().includes(dataSearchGenre.toLowerCase()) )
 // creates search criteria to be used when searching for matchs, sets the string attached to the search to be lower case and includes it in the displayed search
 // destructures the book array so that only the relevant objects inside the array can be easier found by the search function
-const [ authors, id, image, title ] = book;
+const matches = books;
+const page = 1
 // calculates the range, the amount of books to be displayed according to the value of the current page the user is on
 const range = [(page - 1) * BOOKS_PER_PAGE, page * BOOKS_PER_PAGE]
 // let matches = books; a variable used previously instead of the filter function written above
 // sets the books each page and the remaining amount to be displayed after each instance
 const start = (page - 1) * BOOKS_PER_PAGE;
 const end = start + BOOKS_PER_PAGE;
-const page = 1
 // variable shortcut to be used when using the theme function
 // light and dark mode rgb ranges to be used by the user depending on preference
 const cssThemeMode = {
@@ -31,7 +31,7 @@ night: {
 }
 // --ALL QUERY.SELECTORS TO BE USED IN THE SCRIPT--
 const dataListButton = document.querySelector("[data-list-button]")
-const dataSearchOverlay = document.querySelector("[data-search-overlay]");
+const dataSearchOverlay = document.querySelector("[data-search-overlay].data .overlay");
 const dataSettingsOverlay = document.querySelector("[data-settings-overlay]");
 const dataSearchCancel = document.querySelector("[data-search-cancel]");
 const dataSettingsCancel = document.querySelector("[data-settings-cancel]");
@@ -41,6 +41,9 @@ const dataLeaderSearch = document.querySelector("[data-header-search]");
 const dataSearchTitle = document.querySelector("[data-search-title]");
 const dataSearchForm = document.querySelector("[data-search-form]");
 const dataListItems = document.querySelector("[data-list-items]");
+const dataSearchGenre = document.querySelector('[data-search-genre]')
+const dataSearchAuthor = document.querySelector('[data-search-author]')
+const dataHeaderSettings = document.querySelector('[data-header-settings]')
 
 const dataListActive = document.querySelector("[data-list-active]");
 const dataListBlur = document.querySelector("[data-list-blur]");
@@ -68,7 +71,7 @@ const extractedBooks = books.slice(start, end);
 // for the "for" loop set the end of loop to 36 so it stops showing books when it reachs "extracted = 36"
 // make {author, image, title, id} into an array so that they are easier to access
 function createPreview(preview) {
-    const { authors: authorId, id, image, title } = preview
+    const {authors, id, image, title} = preview
 
     const showPreview = document.createElement('button')
     showPreview.classList = 'preview'
@@ -81,8 +84,9 @@ function createPreview(preview) {
         />
 
         <div class="preview__info">
-            <h3 class="preview__title">${title}</h3>
-            <div class="preview__author">${authors[authorId]}</div>
+            <h3 class="preview__title">'${title}'</h3>
+            <div class="preview__author">${'authors' [authors]}
+            </div>
         </div>
     `
 
@@ -94,7 +98,7 @@ for (const preview of extractedBooks){
     extractedFragment.appendChild(showPreview);
 }
 // puts the value gotten within extractedBooks into the datalistButton DOM to be used when the datalistbutton function is called later
-dataListButton.appendChild(extractedBooks)
+dataListButton.appendChild(extractedFragment)
 
 // after the preview button is pressed it needs to create a new function for when the button is pressed again everytime to load the next page of books 
 
@@ -124,10 +128,6 @@ dataListButton.addEventListener('click', () => {
         }
 })
 
-dataListItems.appendChild(preview);
-dataListItems.innerHTML = " "
-
-;
 
 
 // GENRES LOOP FUNCTION
@@ -158,8 +158,7 @@ for (const [id, name] of Object.entries(genres)) {
 }
 
 // appends the values given in the genre search into the DOM
-dataSearchGenre.appendChild(genresFragment);
-// console.log(dataSearchGenre)
+// dataSearchGenre.appendChild(genresFragment);
 
 // creates a recurring loop funciton for the author key
 const authorsFragment = document.createDocumentFragment();
@@ -175,7 +174,7 @@ for (const [id, name] of Object.entries(authors)) {
     authorElement.innerText = name;
     authorsFragment.appendChild(authorElement);
 }
-dataSearchAuthor.appendChild(authorsFragment);
+// dataSearchAuthor.appendChild(authorsFragment);
 
 
 // CSS SELECTORS
@@ -188,7 +187,7 @@ dataSearchCancel.addEventListener('click', () => {
     dataSearchOverlay.close();
 })
 
-data-settings-theme.value === window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day'
+dataSettingsTheme.value === window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day'
 const v = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? 'night' : 'day';
 
 // do you make this into a object to set light and dark theme?
@@ -206,11 +205,11 @@ according to the equation as a span in the innerHTML*/
 
 // --EVENT LISTENERS TO BE USED BY THE SCRIPT--
 // DOM ELEMENT SELECTORS
-settingsForm.addEventListener('submit', handleSettingsSubmit);
-listClose.addEventListener('click', hideList);
-headerSearch.addEventListener('click', showSearchOverlay);
-searchTitle.addEventListener('click', handleSearchTitle);
-listItems.addEventListener("click", handleListItems);
+// settingsForm.addEventListener('submit', handleSettingsSubmit);
+// listClose.addEventListener('click', hideList);
+// headerSearch.addEventListener('click', showSearchOverlay);
+// searchTitle.addEventListener('click', handleSearchTitle);
+// listItems.addEventListener("click", handleListItems);
 
 
 
@@ -305,29 +304,29 @@ const remaining = result.length - page * BOOKS_PER_PAGE;
     dataSearchForm.reset()
 })
 
-// the settings overlay in which the user can adjust the light and dark mode of the webpage
-dataHeaderSettings.addEventListener('click', () => {
-    settingsOverlay.showModal()
-})
+// // the settings overlay in which the user can adjust the light and dark mode of the webpage
+// dataHeaderSettings.addEventListener('click', () => {
+//     settingsOverlay.showModal()
+// })
 
-settingsCancel.addEventListener('click', () => { 
-    settingsOverlay.close()
-})    
+// settingsCancel.addEventListener('click', () => { 
+//     settingsOverlay.close()
+// })    
 
 
-function handleListItems(event) {
-    const previewId = event.target.dataset.preview;
-    for (const singleBook of books) {
-        if (singleBook.id === previewId) {
-            book = singleBook;
-            break;
-        }
-    }
-    if (book) {
-        dataListActive.open = true;
-        dataListBlur.src =book.image;
-        dataListTitle.innerText = book.title;
-        dataListSubtitle.innerText = `${authors[book.author]} (${new Date(book.published).getFullYear()})`;
-        dataListDescription.innerText = book.description;
-    }
-}
+// function handleListItems(event) {
+//     const previewId = event.target.dataset.preview;
+//     for (const singleBook of books) {
+//         if (singleBook.id === previewId) {
+//             book = singleBook;
+//             break;
+//         }
+//     }
+//     if (book) {
+//         dataListActive.open = true;
+//         dataListBlur.src =book.image;
+//         dataListTitle.innerText = book.title;
+//         dataListSubtitle.innerText = `${authors[book.author]} (${new Date(book.published).getFullYear()})`;
+//         dataListDescription.innerText = book.description;
+//     }
+// }
