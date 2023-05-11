@@ -31,7 +31,7 @@ night: {
 }
 // --ALL QUERY.SELECTORS TO BE USED IN THE SCRIPT--
 const dataListButton = document.querySelector("[data-list-button]")
-const dataSearchOverlay = document.querySelector("[data-search-overlay].data .overlay");
+const dataSearchOverlay = document.querySelector("[data-search-overlay]");
 const dataSettingsOverlay = document.querySelector("[data-settings-overlay]");
 const dataSearchCancel = document.querySelector("[data-search-cancel]");
 const dataSettingsCancel = document.querySelector("[data-settings-cancel]");
@@ -71,7 +71,7 @@ const extractedBooks = books.slice(start, end);
 // for the "for" loop set the end of loop to 36 so it stops showing books when it reachs "extracted = 36"
 // make {author, image, title, id} into an array so that they are easier to access
 function createPreview(preview) {
-    const {authors, id, image, title} = preview
+    const {authorID: authors, id, image, title} = preview
 
     const showPreview = document.createElement('button')
     showPreview.classList = 'preview'
@@ -88,13 +88,13 @@ function createPreview(preview) {
             <div class="preview__author">${'authors' [authors]}
             </div>
         </div>
-    `
-
-    return showPreview
-}
-
-for (const preview of extractedBooks){
-    const showPreview = createPreview(preview);
+        `
+        
+        return showPreview
+    }
+    
+    for (const preview of extractedBooks){
+        const showPreview = createPreview(preview);
     extractedFragment.appendChild(showPreview);
 }
 // puts the value gotten within extractedBooks into the datalistButton DOM to be used when the datalistbutton function is called later
@@ -107,7 +107,7 @@ dataListButton.addEventListener('click', () => {
     
     const newExtractedFragment = document.createDocumentFragment();
     const newExtractedBooks = books.slice(start, end);
-
+    
     for (const preview of newExtractedBooks){
         const showPreview = createPreview(preview);
         newExtractedFragment.appendChild(showPreview)
@@ -116,18 +116,43 @@ dataListButton.addEventListener('click', () => {
     dataListButton.appendChild(newExtractedFragment);
     // math responsible for checking how much books remain and keeps the show more button active for aslong as the total books arent zero or less
     if (matches.length - (page * BOOKS_PER_PAGE) <= 0) {
-        dataListButton.disabled = false;
+        dataListButton.disabled = true;
         dataListButton.innerHTML = /* HTML */
         `<span>...<span>`
     } else {
-        dataListButton.disabled = true;
+        dataListButton.disabled = false;
         dataListButton.innerHTML = /* html */ 
         ` 
-      <span>Show more</span>
-       <span class="list__remaining"> '${matches.length - (page * BOOKS_PER_PAGE) > 0 ? matches.length - (page * BOOKS_PER_PAGE) : ''}'</span>`
-        }
+        <span>Show more</span>
+        <span class="list__remaining"> '${matches.length - (page * BOOKS_PER_PAGE) > 0 ? matches.length - (page * BOOKS_PER_PAGE) : ''}'</span>`
+    }
 })
 
+// function to list the books from the search function when the submit button is clicked by the user
+dataListItems.addEventListener('click', (event) => {
+    dataListActive.showModal()
+    let pathArray = Array.from(event.path || event.composedPath())
+    let active;
+    
+    for (const node of pathArray) {
+        if (active) break;
+        const id = node?.dataset?.preview
+        
+        for (const singleBook of books) {
+        if (singleBook.id === id) {
+            active = singleBook
+            break;
+        }
+        }
+    }
+    
+    if (!active) return;
+    dataListImage.src = active.image;
+    dataListBlur.src = active.image;
+    dataListTitle.textContent = active.title; 
+    dataListSubtitle.textContent = `${authors[active.author]} (${new Date(active.published).getFullYear()})`
+    dataListDescription.textContent = active.description;
+})
 
 
 // GENRES LOOP FUNCTION
@@ -180,14 +205,14 @@ for (const [id, name] of Object.entries(authors)) {
 // CSS SELECTORS
 // CSS that checks whether the theme should be night or day depending on whether the data key returns true or false
 //  --CSS SELECTOR FUNCTIONS--
-dataHeaderSettings.addEventListener('click', () => {
-    dataHeaderSettings.showModal();
+dataSettingsTheme.addEventListener('submit', () => {
+    dataSettingsTheme.showModal();
     })
-dataSearchCancel.addEventListener('click', () => {
-    dataSearchOverlay.close();
+dataSettingsCancel.addEventListener('submit', () => {
+    dataSettingsForm.close();
 })
 
-dataSettingsTheme.value === window.matchMedia() && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day'
+dataSettingsTheme.value === window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day'
 const v = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? 'night' : 'day';
 
 // do you make this into a object to set light and dark theme?
@@ -307,19 +332,3 @@ dataSettingsCancel.addEventListener('click', () => {
 })    
 
 
-function handleListItems(event) {
-    const previewId = event.target.dataset.preview;
-    for (const singleBook of books) {
-        if (singleBook.id === previewId) {
-            books = singleBook;
-            break;
-        }
-    }
-    if (books) {
-        dataListActive.open = true;
-        dataListBlur.src =books.image;
-        dataListTitle.innerText = books.title;
-        dataListSubtitle.innerText = `${authors[books.author]} (${new Date(books.published_date).getFullYear()})` || '';
-        dataListDescription.innerText = books.description;
-    }
-}
