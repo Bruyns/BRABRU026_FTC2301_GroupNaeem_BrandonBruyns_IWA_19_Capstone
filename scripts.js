@@ -116,7 +116,7 @@ dataListButton.addEventListener('click', () => {
     dataListButton.appendChild(newExtractedFragment);
     // math responsible for checking how much books remain and keeps the show more button active for aslong as the total books arent zero or less
     if (matches.length - (page * BOOKS_PER_PAGE) <= 0) {
-        dataListButton.disabled = true;
+        dataListButton.disabled = false;
         dataListButton.innerHTML = /* HTML */
         `<span>...<span>`
     } else {
@@ -124,7 +124,7 @@ dataListButton.addEventListener('click', () => {
         dataListButton.innerHTML = /* html */ 
         ` 
       <span>Show more</span>
-       <span class="list__remaining"> '${matches.length - [page * BOOKS_PER_PAGE] > 0 ? matches.length - [page * BOOKS_PER_PAGE] : ''}'</span>`
+       <span class="list__remaining"> '${matches.length - (page * BOOKS_PER_PAGE) > 0 ? matches.length - (page * BOOKS_PER_PAGE) : ''}'</span>`
         }
 })
 
@@ -187,7 +187,7 @@ dataSearchCancel.addEventListener('click', () => {
     dataSearchOverlay.close();
 })
 
-dataSettingsTheme.value === window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day'
+dataSettingsTheme.value === window.matchMedia() && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day'
 const v = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? 'night' : 'day';
 
 // do you make this into a object to set light and dark theme?
@@ -204,13 +204,6 @@ according to the equation as a span in the innerHTML*/
 // function used to set book previews to a given value for each page loaded to be ran each time button is clicked
 
 // --EVENT LISTENERS TO BE USED BY THE SCRIPT--
-// DOM ELEMENT SELECTORS
-// settingsForm.addEventListener('submit', handleSettingsSubmit);
-// listClose.addEventListener('click', hideList);
-// headerSearch.addEventListener('click', showSearchOverlay);
-// searchTitle.addEventListener('click', handleSearchTitle);
-// listItems.addEventListener("click", handleListItems);
-
 
 
 // filters books based on the users search criteria
@@ -223,7 +216,7 @@ dataSearchForm.addEventListener('submit', (event) => {
 
     for (const book of books) {
         // if any returns false in the sequence the loop runs again searching each book until the value/string returns true for any title, genre or author
-        const titleMatch = filters.title !== '' && book.title.toLowerCase().includes(filters.titles.toLowerCase());
+        const titleMatch = filters.title !== '' && book.title.toLowerCase().includes(filters.title.toLowerCase());
         const genreMatch = filters.genre !== 'any' && book.genres.includes(filters.genre);
         const authorMatch = filters.author !== 'any' && book.author.includes(filters.author);
         
@@ -236,7 +229,7 @@ dataSearchForm.addEventListener('submit', (event) => {
 // data attributes
 //  if the new array of results returns nothing the button to show more books should disable since if theirs no books there shouldnt be another page
 if (result.length < 1) { 
-    dataListItems.innerHTML = '';
+    dataListItems.innerHTML = null;
     dataListButton.disabled = true;
     dataListMessage.classList.add('list__message_show');
 
@@ -253,7 +246,7 @@ if (result.length < 1) {
     const searchEnd = searchstart * BOOKS_PER_PAGE;
 
     const searchExtractedFragment = document.createDocumentFragment();
-    const searchExtractedBooks = result.slice(searchstart, searchEnd);
+    const searchExtractedBooks = result.slice(searchstart, searchEnd + 1);
 
     for (const preview of searchExtractedBooks){
         const showPreview = createPreview(preview);
@@ -278,7 +271,7 @@ const remaining = result.length - page * BOOKS_PER_PAGE;
             const moreSearchStart = (page - 1) * BOOKS_PER_PAGE
             const moreSearchEnd = moreSearchStart + BOOKS_PER_PAGE
         
-            const moreSearchBookExtracted = result.slice(moreSearchStart, moreSearchEnd)
+            const moreSearchBookExtracted = result.slice(moreSearchStart, moreSearchEnd + 1)
         
             const moreSearchBookFragment = document.createDocumentFragment()
         
@@ -295,7 +288,7 @@ const remaining = result.length - page * BOOKS_PER_PAGE;
             <span class="list__remaining"> (${remaining > 0 ? remaining : 0})</span>
             `;
         
-            dataListButton.disabled = remaining <= 0;
+            dataListButton.disabled = remaining < 0;
         })
 }
 // if the entire function runs but nothing is processed or all returns false the fallback is to reset and scroll page to top
@@ -304,29 +297,29 @@ const remaining = result.length - page * BOOKS_PER_PAGE;
     dataSearchForm.reset()
 })
 
-// // the settings overlay in which the user can adjust the light and dark mode of the webpage
-// dataHeaderSettings.addEventListener('click', () => {
-//     settingsOverlay.showModal()
-// })
+// the settings overlay in which the user can adjust the light and dark mode of the webpage
+dataHeaderSettings.addEventListener('click', () => {
+    dataSettingsOverlay.showModal()
+})
 
-// settingsCancel.addEventListener('click', () => { 
-//     settingsOverlay.close()
-// })    
+dataSettingsCancel.addEventListener('click', () => { 
+    dataSettingsOverlay.close()
+})    
 
 
-// function handleListItems(event) {
-//     const previewId = event.target.dataset.preview;
-//     for (const singleBook of books) {
-//         if (singleBook.id === previewId) {
-//             book = singleBook;
-//             break;
-//         }
-//     }
-//     if (book) {
-//         dataListActive.open = true;
-//         dataListBlur.src =book.image;
-//         dataListTitle.innerText = book.title;
-//         dataListSubtitle.innerText = `${authors[book.author]} (${new Date(book.published).getFullYear()})`;
-//         dataListDescription.innerText = book.description;
-//     }
-// }
+function handleListItems(event) {
+    const previewId = event.target.dataset.preview;
+    for (const singleBook of books) {
+        if (singleBook.id === previewId) {
+            books = singleBook;
+            break;
+        }
+    }
+    if (books) {
+        dataListActive.open = true;
+        dataListBlur.src =books.image;
+        dataListTitle.innerText = books.title;
+        dataListSubtitle.innerText = `${authors[books.author]} (${new Date(books.published_date).getFullYear()})` || '';
+        dataListDescription.innerText = books.description;
+    }
+}
