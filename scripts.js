@@ -71,7 +71,7 @@ const extractedBooks = books.slice(start, end);
 // for the "for" loop set the end of loop to 36 so it stops showing books when it reachs "extracted = 36"
 // make {author, image, title, id} into an array so that they are easier to access
 function createPreview(preview) {
-    const {authorID: authors, id, image, title} = preview
+    const {authors, id, image, title} = preview
 
     const showPreview = document.createElement('button')
     showPreview.classList = 'preview'
@@ -88,13 +88,13 @@ function createPreview(preview) {
             <div class="preview__author">${'authors' [authors]}
             </div>
         </div>
-        `
-        
-        return showPreview
-    }
-    
-    for (const preview of extractedBooks){
-        const showPreview = createPreview(preview);
+    `
+
+    return showPreview
+}
+
+for (const preview of extractedBooks){
+    const showPreview = createPreview(preview);
     extractedFragment.appendChild(showPreview);
 }
 // puts the value gotten within extractedBooks into the datalistButton DOM to be used when the datalistbutton function is called later
@@ -107,7 +107,7 @@ dataListButton.addEventListener('click', () => {
     
     const newExtractedFragment = document.createDocumentFragment();
     const newExtractedBooks = books.slice(start, end);
-    
+
     for (const preview of newExtractedBooks){
         const showPreview = createPreview(preview);
         newExtractedFragment.appendChild(showPreview)
@@ -123,36 +123,11 @@ dataListButton.addEventListener('click', () => {
         dataListButton.disabled = false;
         dataListButton.innerHTML = /* html */ 
         ` 
-        <span>Show more</span>
-        <span class="list__remaining"> '${matches.length - (page * BOOKS_PER_PAGE) > 0 ? matches.length - (page * BOOKS_PER_PAGE) : ''}'</span>`
-    }
+      <span>Show more</span>
+       <span class="list__remaining"> '${matches.length - (page * BOOKS_PER_PAGE) > 0 ? matches.length - (page * BOOKS_PER_PAGE) : ''}'</span>`
+        }
 })
 
-// function to list the books from the search function when the submit button is clicked by the user
-dataListItems.addEventListener('click', (event) => {
-    dataListActive.showModal()
-    let pathArray = Array.from(event.path || event.composedPath())
-    let active;
-    
-    for (const node of pathArray) {
-        if (active) break;
-        const id = node?.dataset?.preview
-        
-        for (const singleBook of books) {
-        if (singleBook.id === id) {
-            active = singleBook
-            break;
-        }
-        }
-    }
-    
-    if (!active) return;
-    dataListImage.src = active.image;
-    dataListBlur.src = active.image;
-    dataListTitle.textContent = active.title; 
-    dataListSubtitle.textContent = `${authors[active.author]} (${new Date(active.published).getFullYear()})`
-    dataListDescription.textContent = active.description;
-})
 
 
 // GENRES LOOP FUNCTION
@@ -331,4 +306,29 @@ dataSettingsCancel.addEventListener('click', () => {
     dataSettingsOverlay.close()
 })    
 
+// final function to list the books from the search function when the submit button is clicked by the user
+dataListItems.addEventListener('click', (event) => {
+    dataListActive.showModal()
+    let pathArray = Array.from(event.path || event.composedPath())
+    let active;
+  
+    for (const node of pathArray) {
+      if (active) break;
+      const id = node?.dataset?.preview
+      
+      for (const singleBook of books) {
+        if (singleBook.id === id) {
+          active = singleBook
+          break;
+        }
+      }
+    }
+  
+    if (!active) return;
+    dataListImage.src = active.image;
+    dataListBlur.src = active.image;
+    dataListTitle.textContent = active.title; 
+    dataListSubtitle.textContent = `${authors[active.author]} (${new Date(active.published).getFullYear()})`
+    dataListDescription.textContent = active.description;
+})
 
